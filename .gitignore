@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+.virtual_documents/
+
+# Ignore raw datasets
+data/raw/*.csv
+
+# Ignore processed datasets
+data/processed/*.csv
