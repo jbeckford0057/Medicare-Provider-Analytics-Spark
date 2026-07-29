@@ -12,5 +12,5 @@ __pycache__/
 # Ignore raw datasets
 data/raw/*.csv
 
-# Ignore processed datasets
-data/processed/*.csv
+# # Ignore processed Spark output
+data/processed/
