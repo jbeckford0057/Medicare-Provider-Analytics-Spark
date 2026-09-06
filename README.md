@@ -2,10 +2,10 @@
 
 ## CS675 – Big Data: Management & Analytics
 
-**Project:** Medicare Provider Analytics Using Apache Spark and Cloud Storage  
-**Course:** CS675 – Big Data: Management & Analytics  
-**Institution:** King Graduate School  
-**Student:** Judi-Ann Beckford  
+**Project:** Medicare Provider Analytics Using Apache Spark and Cloud Storage
+**Course:** CS675 – Big Data: Management & Analytics
+**Institution:** King Graduate School
+**Student:** Judi-Ann Beckford
 
 ---
 
