@@ -1,0 +1,16 @@
+{
+  "name": "Medicare-Provider-Analytics-Spark",
+  "releaseLabel": "emr-7.13.0",
+  "type": "SPARK",
+  "autoStartConfiguration": {
+    "enabled": true
+  },
+  "autoStopConfiguration": {
+    "enabled": true,
+    "idleTimeoutMinutes": 5
+  },
+  "maximumCapacity": {
+    "cpu": "8 vCPU",
+    "memory": "32 GB"
+  }
+}
