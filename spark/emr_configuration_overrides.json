@@ -1,0 +1,7 @@
+{
+  "monitoringConfiguration": {
+    "s3MonitoringConfiguration": {
+      "logUri": "s3://medicare-provider-analytics-cs675-2026/emr/logs/"
+    }
+  }
+}
