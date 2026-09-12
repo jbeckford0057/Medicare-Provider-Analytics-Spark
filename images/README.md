@@ -1,15 +1,18 @@
 # Project Images and Evidence
 
-This directory is reserved for selected visual evidence used in the final presentation and video.
+This directory contains selected visual evidence supporting the final project presentation and video demonstration.
 
-Recommended evidence includes:
+## AWS EMR Evidence
 
-- AWS S3 project bucket structure
-- Athena query results
-- EMR cluster configuration
-- Completed EMR Spark step
-- YARN application evidence
-- EMR/CloudWatch monitoring graphs
-- Final automatic cluster termination status
+The `aws-evidence/` folder documents the successful cloud Spark execution lifecycle:
 
-Large or redundant screenshots do not need to be stored in GitHub unless they are used directly in the final presentation.
+- `01-emr-cluster-configuration.png` – EMR cluster configuration and installed Spark/Hadoop versions
+- `01.1-emr-cluster-running.png` – active EMR cluster
+- `02-emr-step-completed.png` – successful `Medicare-Processed-Data-Validation` step
+- `03-emr-cluster-monitoring.png` – cluster idle/container metrics
+- `03.1-emr-step-monitoring.png` – step submission/completion/failure metrics
+- `04-emr-cluster-terminated.png` – final terminated cluster state
+
+Together, these screenshots provide visual evidence that the Spark workload executed successfully on Amazon EMR on EC2 and that the cluster auto-termination configuration worked.
+
+Additional screenshots should only be added if they materially support the final presentation or video.
