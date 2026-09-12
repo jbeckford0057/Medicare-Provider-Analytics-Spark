@@ -2,9 +2,9 @@
 
 ## CS675 – Big Data: Management & Analytics
 
-**Project:** Medicare Provider Analytics Using Apache Spark and Cloud Storage
-**Course:** CS675 – Big Data: Management & Analytics
-**Institution:** King Graduate School
+**Project:** Medicare Provider Analytics Using Apache Spark and AWS  
+**Course:** CS675 – Big Data: Management & Analytics  
+**Institution:** King Graduate School  
 **Student:** Judi-Ann Beckford
 
 ---
@@ -13,9 +13,7 @@
 
 This project implements an end-to-end big data analytics pipeline using publicly available Medicare provider datasets from the Centers for Medicare & Medicaid Services (CMS).
 
-The project integrates Medicare provider-service utilization data with Medicare Fee-for-Service provider enrollment data using the National Provider Identifier (NPI). Apache Spark is used for distributed profiling, preprocessing, feature engineering, integration, validation, and analytics.
-
-The project was initially developed and tested in a local Spark environment using MinIO as S3-compatible object storage. The final cloud architecture uses Amazon Web Services (AWS), including Amazon S3 for cloud object storage and Amazon Athena for serverless SQL analytics. Amazon EMR Serverless workloads are also included for cloud-based Spark validation, cross-source integration, and scalability testing.
+The solution integrates Medicare provider-service utilization data with Medicare Fee-for-Service provider enrollment data using the National Provider Identifier (NPI). Apache Spark is used for distributed profiling, preprocessing, feature engineering, integration, validation, and analytics. The final cloud implementation uses Amazon S3 for object storage, Amazon Athena for serverless SQL analytics, and Amazon EMR on EC2 for AWS-hosted Spark execution.
 
 The project demonstrates:
 
@@ -30,23 +28,21 @@ The project demonstrates:
 - Amazon S3 cloud storage
 - Amazon Athena serverless analytics
 - Partition-pruning performance analysis
-- Amazon EMR Serverless Spark job configuration
-- Reproducible cloud deployment artifacts
+- Amazon EMR on EC2 Spark execution
+- YARN-based distributed job execution
+- Cloud monitoring and automatic cluster termination
 - Synthetic 100M+ row scalability benchmarking
+- Reproducible project artifacts in GitHub
 
 ---
 
 ## Data Sources
 
-Two public CMS datasets are used.
-
 ### 1. Medicare Physician & Other Practitioners – by Provider and Service
 
 This dataset contains Medicare utilization, beneficiary, service, charge, allowed-payment, and Medicare-payment information at the provider/service level.
 
-The source dataset is approximately 3 GB and contains millions of provider-service records.
-
-Key fields used in the project include:
+Key fields used include:
 
 - NPI
 - Provider specialty
@@ -73,13 +69,11 @@ Key information includes:
 - Enrollment state
 - Enrollment records
 
-Because an NPI can occur more than once in the enrollment source, the enrollment data is first aggregated into a **one-row-per-NPI enrollment dimension** before joining it to the provider-service dataset. This prevents unintended row multiplication during integration.
+Because an NPI can occur more than once in the enrollment source, the enrollment data is aggregated into a **one-row-per-NPI enrollment dimension** before joining it to the provider-service dataset. This prevents unintended row multiplication.
 
 ---
 
 ## Research Questions
-
-The analytical workflow addresses the following questions:
 
 1. Which provider specialties account for the highest estimated Medicare payments?
 2. Which HCPCS procedure codes account for the highest estimated Medicare payments?
@@ -95,13 +89,11 @@ The project does **not** classify providers as fraudulent. High-payment or high-
 
 The two CMS sources are integrated using the **National Provider Identifier (NPI)**.
 
-The provider-service dataset contains multiple service-level records for an individual NPI. The enrollment source may also contain multiple enrollment records for the same NPI.
+The provider-service dataset contains multiple service-level records for an individual NPI. The enrollment source may also contain multiple enrollment records for the same NPI. To avoid a many-to-many join, the enrollment source is transformed into a one-row-per-NPI dimension before integration.
 
-To avoid a many-to-many join, the enrollment source is transformed into a one-row-per-NPI dimension before integration.
+The final integration uses a **left outer join** from provider-service data to the enrollment dimension.
 
-The final integration uses a **left outer join** from the provider-service dataset to the enrollment dimension.
-
-Local Spark validation produced:
+Validated local Spark results:
 
 - Final integrated rows: **9,781,673**
 - Enrollment dimension: **2,556,656 unique NPIs**
@@ -110,47 +102,45 @@ Local Spark validation produced:
 - Match rate: **98.61%**
 - Join row preservation: **PASS**
 
-The local Spark physical execution plan used a **SortMergeJoin**. A broadcast strategy was evaluated during development but was not appropriate for the available local memory, so the scalable sort-merge strategy was retained.
+The local Spark physical execution plan used a **SortMergeJoin**.
+
 ---
 
 ## System Architecture
-
-The final project architecture combines local development with AWS cloud analytics.
 
 ### Local Development Layer
 
 The local environment was used to develop, test, debug, and validate the Spark pipeline before cloud execution.
 
-Technologies used include:
+Technologies used:
 
 - Python
 - PySpark
 - Apache Spark
 - JupyterLab
 - MinIO for local S3-compatible object-storage testing
-- Git and GitHub for version control
+- Git and GitHub
 
-MinIO served as a **local development and testing environment** and is not presented as a replacement for the final AWS architecture.
+MinIO served only as a local development and testing environment.
 
 ### AWS Cloud Layer
 
-The cloud implementation uses:
+The final AWS implementation uses:
 
-- **Amazon S3** – raw, processed, analytical, EMR, and query-result storage
-- **Amazon Athena** – serverless SQL querying of the processed Parquet dataset
-- **Amazon EMR Serverless** – cloud Spark validation, cross-source integration, and scalability workloads
-- **AWS IAM** – controlled access and EMR Serverless execution-role permissions
-- **AWS Service Quotas** – EMR Serverless vCPU quota management
+- **Amazon S3** – raw, processed, analytical, EMR-script, and query-result storage
+- **Amazon Athena** – serverless SQL querying of partitioned Parquet data
+- **Amazon EMR on EC2** – cloud-hosted Spark 3.5.8 execution
+- **Apache Hadoop 3.4.2 / YARN** – cluster resource management and Spark application execution
+- **AWS IAM** – EMR service role and EC2 instance profile
+- **Amazon CloudWatch / EMR monitoring** – runtime and idle-state monitoring
 
-The primary AWS region used for the project is:
+Primary AWS region:
 
 `us-east-1`
 
-### Data Flow
+### Final Data Flow
 
-The overall pipeline follows this sequence:
-
-`CMS Raw Data → Apache Spark → Cleaning & Feature Engineering → NPI Integration → Parquet → Amazon S3 → Amazon Athena / Amazon EMR Serverless → Analytical Results`
+`CMS Raw Data → Apache Spark → Cleaning & Feature Engineering → NPI Integration → Partitioned Parquet → Amazon S3 → Amazon Athena + Amazon EMR on EC2 → Analytical Results`
 
 ---
 
@@ -162,53 +152,19 @@ The project is organized into four primary Jupyter notebooks.
 
 `notebooks/01_dataset_profiling.ipynb`
 
-The profiling stage examines the structure and quality of the source datasets before transformation.
-
-Activities include:
-
-- Schema inspection
-- Row and column analysis
-- Missing-value assessment
-- Descriptive statistics
-- Identification of relevant integration fields
-- Initial data-quality review
+Activities include schema inspection, row/column analysis, missing-value assessment, descriptive statistics, integration-key review, and initial quality checks.
 
 ### 2. Data Cleaning and Feature Engineering
 
 `notebooks/02_data_cleaning.ipynb`
 
-The cleaning pipeline prepares the Medicare provider-service data for integration and analysis.
-
-Processing includes:
-
-- Data-type standardization
-- Missing-value treatment
-- Numeric quality checks
-- Outlier treatment
-- Capped numeric measures
-- Normalized analytical features
-- Categorical feature preparation
-- Utilization-band creation
-
-Original analytical values are retained where required so that capped and normalized features do not replace the underlying Medicare measures used in final interpretation.
+Processing includes data-type standardization, missing-value treatment, numeric quality checks, outlier treatment, capped measures, normalized features, categorical preparation, and utilization-band creation.
 
 ### 3. Cross-Source Data Integration
 
 `notebooks/03_data_integration.ipynb`
 
-The integration pipeline:
-
-1. Loads the cleaned provider-service dataset.
-2. Loads the Medicare provider-enrollment dataset.
-3. Standardizes the NPI integration key.
-4. Aggregates enrollment records into a one-row-per-NPI dimension.
-5. Performs a left outer join on NPI.
-6. Validates row preservation.
-7. Calculates matched and unmatched records.
-8. Evaluates state consistency between the two sources.
-9. Writes the integrated master dataset as Parquet.
-
-The final master dataset contains **9,781,673 rows** and is partitioned by `PROVIDER_STATE`.
+The integration pipeline standardizes NPI, creates a one-row-per-NPI enrollment dimension, performs the left outer join, validates row preservation, calculates match statistics, evaluates state consistency, and writes the master dataset as Parquet partitioned by `PROVIDER_STATE`.
 
 ### 4. Medicare Analytics
 
@@ -220,17 +176,17 @@ An analytical estimate is calculated as:
 
 `ESTIMATED_TOTAL_MEDICARE_PAYMENT = TOTAL_SERVICES × AVG_MEDICARE_PAYMENT`
 
-This value is an **analytical estimate** and should not be interpreted as an official CMS total-payment field.
+This is an analytical estimate, not an official CMS total-payment field.
 
 ---
 
 ## Amazon S3 Implementation
 
-The AWS deployment stores project data in the following S3 bucket:
+Project bucket:
 
 `medicare-provider-analytics-cs675-2026`
 
-The bucket is organized into logical prefixes:
+Logical prefixes include:
 
 ```text
 raw/
@@ -241,148 +197,96 @@ processed/
 └── master_provider_services/
 
 analytics/
-
 athena-results/
 
 emr/
 ├── scripts/
 ├── output/
 └── logs/
+```
+
+Large source and processed datasets are intentionally excluded from GitHub and stored in Amazon S3.
+
 ---
 
-## Amazon EMR Serverless
+## Amazon Athena
 
-Amazon EMR Serverless is used as the AWS-native distributed Spark compute layer for the final cloud implementation.
+Athena is used to query the processed Parquet master dataset stored in S3.
 
-The repository contains three EMR Serverless Spark workloads.
+Repository SQL artifacts:
 
-### 1. Processed Dataset Validation
+- `sql/create_athena_table.sql`
+- `sql/register_partitions.sql`
+- `sql/athena_validation_queries.sql`
+
+The Athena implementation validates the integrated row count and demonstrates partition pruning for state-filtered queries.
+
+---
+
+## Amazon EMR on EC2 – Successful Cloud Spark Execution
+
+The final Spark cloud validation was executed successfully on **Amazon EMR on EC2**.
+
+### Cluster Configuration
+
+- Amazon EMR release: **emr-7.14.0**
+- Apache Spark: **3.5.8**
+- Hadoop: **3.4.2**
+- Cluster topology: **1 Primary / 0 Core / 0 Task**
+- Primary instance type: **r8g.xlarge**
+- Automatic idle termination: **10 minutes**
+- S3 cluster logging: enabled
+
+### Successful Validation Step
+
+Spark script:
 
 `spark/emr_validation.py`
 
-This job reads the integrated Parquet master dataset directly from Amazon S3 and validates key deployment metrics, including:
+EMR step name:
 
-- Total integrated row count
-- Distinct provider states/territories
-- Connecticut row count
-- Connecticut total services
-- State-level utilization summaries
+`Medicare-Processed-Data-Validation`
 
-The corresponding job configuration is:
+Execution result:
 
-`spark/emr_job_driver.json`
+- Step status: **Completed**
+- YARN application successfully submitted and executed
+- Controller exit code: **0**
+- Spark step runtime: **128 seconds**
+- Cluster returned to an idle state after completion
+- Automatic termination completed successfully
 
-### 2. Raw Cross-Source Join Validation
+This confirms that the processed Medicare dataset and Spark validation workflow executed successfully in AWS, not only in the local development environment.
 
-`spark/emr_raw_join_validation.py`
+A detailed deployment record is available in:
 
-This workload reads both original CMS source datasets directly from Amazon S3 and reproduces the core cross-source NPI integration in the AWS environment.
-
-The job:
-
-- Reads the raw provider-service CSV
-- Reads the raw provider-enrollment CSV
-- Standardizes NPI
-- Creates a one-row-per-NPI enrollment dimension
-- Performs a left outer join
-- Measures matched and unmatched records
-- Calculates the match rate
-- Tests provider-row preservation
-- Writes compact validation evidence to Amazon S3
-
-The corresponding configuration is:
-
-`spark/emr_raw_join_job_driver.json`
-
-### 3. 100M+ Row Scalability Benchmark
-
-`spark/scale_benchmark.py`
-
-A separate scalability workload is included to evaluate Spark at a substantially larger logical data volume.
-
-The benchmark uses the real CMS-derived schemas and records as its foundation and creates synthetic replicated benchmark rows.
-
-The replication is explicitly identified as synthetic:
-
-**Replicated benchmark rows are not additional Medicare observations.**
-
-The benchmark is designed so that:
-
-- The provider-side logical dataset exceeds 100 million rows.
-- The enrollment-side logical dataset exceeds 100 million rows.
-- A synthetic `SCALE_COPY_ID` is added.
-- The distributed join uses NPI together with the synthetic copy identifier.
-- Spark performs the large-scale transformation and aggregation.
-- Only compact benchmark metrics are persisted to S3 rather than writing hundreds of millions of replicated rows.
-
-The corresponding EMR configuration is:
-
-`spark/emr_scale_benchmark_job_driver.json`
-
-This approach provides a transparent scalability test without misrepresenting synthetic replicated records as additional CMS data.
+`docs/emr_deployment.md`
 
 ---
 
-## EMR Serverless Deployment Status
+## EMR Serverless Artifacts
 
-The EMR Serverless application and workload definitions are included in the repository and the required AWS IAM execution-role infrastructure has been prepared.
+The repository also contains EMR Serverless configuration files and Spark workloads prepared during development:
 
-At the time of this README revision, the AWS account-level **Max concurrent vCPUs per account** quota increase required for EMR Serverless execution is pending AWS approval.
+- `spark/emr_application_config.json`
+- `spark/emr_configuration_overrides.json`
+- `spark/emr_job_driver.json`
+- `spark/emr_raw_join_job_driver.json`
+- `spark/emr_scale_benchmark_job_driver.json`
+- `spark/emr_raw_join_validation.py`
+- `spark/scale_benchmark.py`
 
-Therefore, the repository distinguishes between:
-
-- **Completed AWS deployment:** Amazon S3 and Amazon Athena
-- **Prepared for execution:** Amazon EMR Serverless Spark workloads
-- **Local development/testing:** Apache Spark, JupyterLab, and MinIO
-
-The README should be updated with final EMR execution results after the AWS quota request is approved and the jobs are successfully executed.
-
----
-
-## EMR Application Configuration
-
-The EMR Serverless application definition is stored in:
-
-`spark/emr_application_config.json`
-
-The configuration includes:
-
-- Amazon EMR release: `emr-7.13.0`
-- Workload type: Spark
-- Automatic application startup
-- Automatic shutdown after inactivity
-- Maximum application capacity: **8 vCPU**
-- Maximum application memory: **32 GB**
-- Idle auto-stop timeout: **5 minutes**
-
-The capacity limit and automatic shutdown settings are used to control cloud-resource consumption and project cost.
-
-Monitoring output is configured to use Amazon S3 through:
-
-`spark/emr_configuration_overrides.json`
+These artifacts document the originally planned Serverless deployment path. Because the account-level EMR Serverless vCPU quota remained under AWS review, the final cloud Spark validation was completed successfully using **Amazon EMR on EC2** instead.
 
 ---
 
 ## Big Data Scalability Strategy
 
-The original CMS datasets already provide a realistic multi-gigabyte analytical workload.
+The original CMS datasets provide a realistic multi-gigabyte workload. The integrated analytical dataset contains **9,781,673 records**.
 
-The raw source files stored in Amazon S3 include approximately:
+The project also includes `spark/scale_benchmark.py`, which generates a transparent synthetic workload exceeding 100 million logical rows for Spark scalability testing.
 
-- Provider-service data: **3.0 GiB**
-- Provider-enrollment data: **306 MiB**
-
-The integrated analytical dataset contains:
-
-**9,781,673 records**
-
-To evaluate Spark beyond the original source size, the project also contains a synthetic scalability benchmark that generates more than 100 million logical rows on each side of a join.
-
-The benchmark is intentionally separate from the primary analytical results.
-
-No conclusions about Medicare utilization, providers, payments, or beneficiaries are drawn from replicated benchmark rows.
-
-The scale test exists only to evaluate distributed-processing behavior at a larger workload size.
+Replicated benchmark rows are **not additional Medicare observations** and are not used to draw healthcare conclusions.
 
 ---
 
@@ -391,30 +295,73 @@ The scale test exists only to evaluate distributed-processing behavior at a larg
 ```text
 Medicare-Provider-Analytics-Spark/
 │
+├── data/
+│   ├── raw/
+│   │   └── README.md
+│   └── processed/
+│       └── README.md
+│
+├── docs/
+│   ├── architecture.md
+│   ├── preprocessing.md
+│   └── emr_deployment.md
+│
+├── images/
+│   └── README.md
+│
 ├── notebooks/
 │   ├── 01_dataset_profiling.ipynb
 │   ├── 02_data_cleaning.ipynb
 │   ├── 03_data_integration.ipynb
 │   └── 04_medicare_analytics.ipynb
 │
+├── presentation/
+│   └── README.md
+│
 ├── spark/
+│   ├── README.md
 │   ├── emr_validation.py
 │   ├── emr_raw_join_validation.py
 │   ├── scale_benchmark.py
 │   ├── emr_application_config.json
+│   ├── emr_configuration_overrides.json
 │   ├── emr_job_driver.json
 │   ├── emr_raw_join_job_driver.json
-│   ├── emr_scale_benchmark_job_driver.json
-│   └── emr_configuration_overrides.json
+│   └── emr_scale_benchmark_job_driver.json
 │
 ├── sql/
+│   ├── README.md
 │   ├── create_athena_table.sql
 │   ├── register_partitions.sql
 │   └── athena_validation_queries.sql
 │
-├── data/
-│   ├── raw/
-│   └── processed/
-│
 ├── README.md
 └── .gitignore
+```
+
+---
+
+## Project Status
+
+- [x] Dataset profiling
+- [x] Data preprocessing
+- [x] Spark feature engineering
+- [x] NPI-based integration
+- [x] Join validation
+- [x] Medicare analytics
+- [x] Partitioned Parquet output
+- [x] Amazon S3 deployment
+- [x] Amazon Athena deployment
+- [x] Athena validation queries
+- [x] Amazon EMR on EC2 Spark execution
+- [x] Successful YARN application completion
+- [x] Automatic cluster termination validation
+- [x] Public GitHub repository
+- [ ] Final presentation/video package
+
+---
+
+## Author
+
+**Judi-Ann Beckford**  
+CS675 – Big Data: Management & Analytics
