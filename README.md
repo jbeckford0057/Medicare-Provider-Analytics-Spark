@@ -258,6 +258,17 @@ Execution result:
 
 This confirms that the processed Medicare dataset and Spark validation workflow executed successfully in AWS, not only in the local development environment.
 
+### AWS EMR Execution Evidence
+
+The repository includes visual evidence of the successful EMR lifecycle in `images/aws-evidence/`:
+
+- `01-emr-cluster-configuration.png` – EMR cluster configuration and installed applications
+- `01.1-emr-cluster-running.png` – cluster running in AWS
+- `02-emr-step-completed.png` – completed `Medicare-Processed-Data-Validation` Spark step
+- `03-emr-cluster-monitoring.png` – cluster idle/container monitoring
+- `03.1-emr-step-monitoring.png` – submitted/completed/running/failed step metrics
+- `04-emr-cluster-terminated.png` – final successful cluster termination
+
 A detailed deployment record is available in:
 
 `docs/emr_deployment.md`
@@ -307,7 +318,14 @@ Medicare-Provider-Analytics-Spark/
 │   └── emr_deployment.md
 │
 ├── images/
-│   └── README.md
+│   ├── README.md
+│   └── aws-evidence/
+│       ├── 01-emr-cluster-configuration.png
+│       ├── 01.1-emr-cluster-running.png
+│       ├── 02-emr-step-completed.png
+│       ├── 03-emr-cluster-monitoring.png
+│       ├── 03.1-emr-step-monitoring.png
+│       └── 04-emr-cluster-terminated.png
 │
 ├── notebooks/
 │   ├── 01_dataset_profiling.ipynb
