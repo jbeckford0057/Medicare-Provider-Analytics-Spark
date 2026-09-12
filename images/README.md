@@ -1,11 +1,15 @@
 # Project Images and Evidence
 
-This directory contains visual evidence supporting the final project.
+This directory is reserved for selected visual evidence used in the final presentation and video.
 
-Examples include:
+Recommended evidence includes:
 
-- architecture diagrams
-- AWS S3 screenshots
+- AWS S3 project bucket structure
 - Athena query results
-- Spark processing evidence
-- performance comparison results
+- EMR cluster configuration
+- Completed EMR Spark step
+- YARN application evidence
+- EMR/CloudWatch monitoring graphs
+- Final automatic cluster termination status
+
+Large or redundant screenshots do not need to be stored in GitHub unless they are used directly in the final presentation.
