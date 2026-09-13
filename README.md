@@ -332,7 +332,8 @@ Medicare-Provider-Analytics-Spark/
 │   └── 04_medicare_analytics.ipynb
 │
 ├── presentation/
-│   └── README.md
+│   ├── README.md
+│   └── updated Big Data- Management & Analytics.pptx
 │
 ├── spark/
 │   ├── README.md
@@ -373,7 +374,7 @@ Medicare-Provider-Analytics-Spark/
 - [x] Successful YARN application completion
 - [x] Automatic cluster termination validation
 - [x] Public GitHub repository
-- [ ] Final presentation/video package
+- [x] Final presentation/video package
 
 ---
 
