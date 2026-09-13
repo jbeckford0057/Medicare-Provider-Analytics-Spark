@@ -22,7 +22,7 @@ Partitioned Parquet
 Local Analytics / Validation
 ```
 
-Local tools included Python, JupyterLab, Apache Spark, MinIO, Git, and GitHub.
+Local tools included Python, JupyterLab, Apache Spark, Git, and GitHub.
 
 ## Final AWS Architecture
 
