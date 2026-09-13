@@ -1,17 +1,34 @@
 # Presentation and Demonstration Materials
 
-This directory is reserved for the final CS675 presentation and demonstration materials.
+This directory contains the final presentation package for the CS675 – Big Data: Management & Analytics project, **Medicare Provider Analytics Using Apache Spark and AWS**.
 
-The final presentation should document:
+## Final Presentation
+
+- `updated Big Data- Management & Analytics.pptx` – final PowerPoint presentation with the project narrative and embedded demonstration media.
+
+## Presentation Coverage
+
+The final presentation documents:
 
 - project problem and objectives
 - CMS data sources
-- Spark preprocessing and integration workflow
-- Amazon S3 architecture
-- Amazon Athena validation and partition pruning
+- Apache Spark preprocessing and integration workflow
+- Amazon S3 architecture and partitioned Parquet storage
+- Amazon Athena validation and partition-pruning performance
 - successful Amazon EMR on EC2 Spark execution
-- YARN / monitoring evidence
+- YARN execution and AWS validation evidence
 - analytical findings
-- project limitations and next steps
+- scalability and performance
+- project challenges, solutions, and lessons learned
 
-The final video demonstration should show the working repository, S3 data layout, Athena queries, completed EMR Spark step, and monitoring evidence.
+## AWS Demonstration
+
+The embedded demonstration focuses on the final AWS implementation, including:
+
+- Amazon S3 data storage and partitioned output
+- Amazon Athena live validation queries
+- Amazon EMR on EC2 cluster configuration
+- successful `Medicare-Processed-Data-Validation` Spark step
+- completed cloud execution and cluster lifecycle evidence
+
+The repository's supporting AWS screenshots are available in `images/aws-evidence/`, and the detailed EMR deployment record is available in `docs/emr_deployment.md`.
