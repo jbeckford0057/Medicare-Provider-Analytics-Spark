@@ -118,7 +118,6 @@ Technologies used:
 - PySpark
 - Apache Spark
 - JupyterLab
-- MinIO for local S3-compatible object-storage testing
 - Git and GitHub
 
 MinIO served only as a local development and testing environment.
