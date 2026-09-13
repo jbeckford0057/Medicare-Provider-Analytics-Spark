@@ -120,7 +120,6 @@ Technologies used:
 - JupyterLab
 - Git and GitHub
 
-MinIO served only as a local development and testing environment.
 
 ### AWS Cloud Layer
 
